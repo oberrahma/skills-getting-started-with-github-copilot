@@ -48,30 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         `;
 
-
         activitiesList.appendChild(activityCard);
-      // Add event listeners for delete buttons after rendering
-      document.querySelectorAll('.delete-participant').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          const activity = btn.getAttribute('data-activity');
-          const email = btn.getAttribute('data-email');
-          if (confirm(`Remove ${email} from ${activity}?`)) {
-            try {
-              const response = await fetch(`/activities/${encodeURIComponent(activity)}/unregister?email=${encodeURIComponent(email)}`, {
-                method: 'POST',
-              });
-              const result = await response.json();
-              if (response.ok) {
-                fetchActivities();
-              } else {
-                alert(result.detail || 'Failed to remove participant.');
-              }
-            } catch (err) {
-              alert('Failed to remove participant.');
-            }
-          }
-        });
-      });
 
         // Add option to select dropdown
         const option = document.createElement("option");
@@ -84,6 +61,29 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error fetching activities:", error);
     }
   }
+
+  // Use event delegation for delete button clicks
+  activitiesList.addEventListener('click', async (e) => {
+    if (e.target.classList.contains('delete-participant')) {
+      const activity = e.target.getAttribute('data-activity');
+      const email = e.target.getAttribute('data-email');
+      if (confirm(`Remove ${email} from ${activity}?`)) {
+        try {
+          const response = await fetch(`/activities/${encodeURIComponent(activity)}/unregister?email=${encodeURIComponent(email)}`, {
+            method: 'POST',
+          });
+          const result = await response.json();
+          if (response.ok) {
+            fetchActivities();
+          } else {
+            alert(result.detail || 'Failed to remove participant.');
+          }
+        } catch (err) {
+          alert('Failed to remove participant.');
+        }
+      }
+    }
+  });
 
   // Handle form submission
   signupForm.addEventListener("submit", async (event) => {
