@@ -1,5 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
+from urllib.parse import quote
 from src.app import app
 
 client = TestClient(app)
@@ -16,24 +17,24 @@ def test_signup_and_unregister():
     email = "testuser@mergington.edu"
 
     # Ensure user is not already signed up
-    client.post(f"/activities/{activity}/unregister?email={email}")
+    client.post(f"/activities/{quote(activity)}/unregister?email={email}")
 
     # Sign up
-    response = client.post(f"/activities/{activity}/signup?email={email}")
+    response = client.post(f"/activities/{quote(activity)}/signup?email={email}")
     assert response.status_code == 200
     assert f"Signed up {email}" in response.json()["message"]
 
     # Duplicate signup should fail
-    response = client.post(f"/activities/{activity}/signup?email={email}")
+    response = client.post(f"/activities/{quote(activity)}/signup?email={email}")
     assert response.status_code == 400
 
     # Unregister
-    response = client.post(f"/activities/{activity}/unregister?email={email}")
+    response = client.post(f"/activities/{quote(activity)}/unregister?email={email}")
     assert response.status_code == 200
     assert f"Removed {email}" in response.json()["message"]
 
     # Unregister again should fail
-    response = client.post(f"/activities/{activity}/unregister?email={email}")
+    response = client.post(f"/activities/{quote(activity)}/unregister?email={email}")
     assert response.status_code == 400
 
 def test_signup_invalid_activity():
