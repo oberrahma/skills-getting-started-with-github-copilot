@@ -1,4 +1,3 @@
-import pytest
 from fastapi.testclient import TestClient
 from urllib.parse import quote
 from src.app import app
